@@ -39,6 +39,9 @@
             <!-- Example: nv-file-select="" uploader="{Object}" options="{Object}" filters="{String}" -->
             <input type="file" nv-file-select="" uploader="uploader" multiple  /><br/>
 
+            <label for="sprite_size">Sprites size:</label>
+            <input class="form-control" id="sprite_size" type="number" min="1" value="32" />
+
             <label for="sprite_amount">Sprites amount:</label>
             <input class="form-control" id="sprite_amount" type="number" min="1" value="1" />
 
@@ -46,8 +49,12 @@
             <input class="form-control" id="animations_by_sprite" type="number" min="1" value="1" />
 
             <label for="frames_by_animation">Frames by animations:</label>
-            <input class="form-control" id="frames_by_animation" type="number" min="1" value="1" />
+            <input class="form-control" id="frames_by_animation" type="number" min="1" value="1"/>
 
+
+            <button id="change" type="button" class="btn btn-primary btn-lg">Overlay</button>
+
+            <button id="restore" type="button" class="btn btn-primary btn-lg" ng-click="restore()">Restore</button>
 
 
         </div>
@@ -93,10 +100,56 @@
 </div>
 
 <script>
+
+
+
+    $('button').removeAttr('disabled');
+
     $('#myTabs a').click(function (e) {
         e.preventDefault();
         $(this).tab('show')
-    })
+    });
+
+    var change = document.getElementById("change");
+    change.addEventListener('click', function(){
+        var canvasList = document.getElementsByTagName("canvas");
+        var pixels = document.getElementById("sprite_size").value;
+        var spriteAmount = document.getElementById("sprite_amount").value;
+        var animation = document.getElementById("animations_by_sprite").value;
+        var frames = document.getElementById("frames_by_animation").value;
+
+
+        for(var c = 0; c < 2; c++){
+
+
+            var spriteWidth = canvasList[c].width / pixels;
+            var spriteHeight = canvasList[c].height / pixels;
+
+
+            var imagePerSprite = (spriteWidth * spriteHeight) / spriteAmount;
+
+            if(imagePerSprite / spriteWidth == frames){
+                var sizeX = animation;
+                var sizeY = frames;
+            }
+            else{
+                sizeX = frames;
+                sizeY = animation;
+            }
+            var canvas = canvasList[c];
+            for(var j = 0; j < spriteHeight; j++) {
+                for (i = 0; i < spriteWidth; i++) {
+                    var color = {
+                        r: Math.floor((Math.random() * 255)),
+                        g: Math.floor((Math.random() * 255)),
+                        b: Math.floor((Math.random() * 255))
+                    };
+                    canvas.getContext('2d').fillStyle = "rgba(" + color.r + "," + color.g + "," + color.b + " , 0.5)";
+                    canvas.getContext('2d').fillRect(i * 32 * sizeX, j * 32 * sizeY, sizeX * 32, sizeY * 32);
+                }
+            }
+        }
+    });
 </script>
 </body>
 </html>

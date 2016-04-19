@@ -15,6 +15,42 @@ angular
             url: 'upload.php'
         });
 
+        function onLoadFile(event) {
+            var self = this;
+            var img = new Image();
+            self.img = img;
+            img.onload = function() {
+                onLoadImage.call(self, 0);
+            };
+            img.src = event.target.result;
+        }
+
+        function onLoadImage(index) {
+            var width = this.img.width;
+            var height = this.img.height;
+            this.canvas.getContext('2d').drawImage(this.img, 0, 0, width, height);
+        }
+
+        $scope.canvasList = {};
+
+        $scope.restore = function(){
+            var canvasList = document.getElementsByTagName("canvas");
+            var reader;
+
+            for(var i = 0; i < canvasList.length; i++) {
+                var canvas = canvasList[i];
+                canvas.getContext('2d').clearRect(0, 0, canvasList[i].width, canvasList[i].height);
+                var self = this;
+
+                reader = new FileReader();
+                reader.canvas = canvas;
+                reader.onload = function(event){
+                    onLoadFile.call(this, event);
+                };
+                reader.readAsDataURL(uploader.queue[i]._file);
+            }
+        };
+
         // FILTERS
 
         uploader.filters.push({
@@ -62,5 +98,7 @@ angular
         };
 
         console.info('uploader', uploader);
+
+
     }]);
 
